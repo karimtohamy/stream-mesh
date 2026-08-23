@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+
+
+    {
+      "name": "media-sync-service",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/media-sync-service/cmd/server"
+    }
+  ]
+}

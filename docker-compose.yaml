@@ -1,26 +1,6 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: stream-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_secret}
-      MYSQL_USER: ${MYSQL_USER:-stream_admin}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-stream_secret}
-    volumes:
-      - ./infrastructure/docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - mysql_data:/var/lib/mysql
-    ports:
-      - "${MYSQL_PORT:-3306}:3306"
-    networks:
-      - stream-mesh-net
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_secret}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   redis:
     image: redis:7-alpine
     container_name: stream-redis
@@ -40,11 +20,11 @@ services:
     image: rabbitmq:3.13-management-alpine
     container_name: stream-rabbitmq
     ports:
-      - "${RABBITMQ_PORT:-5672}:5672"
-      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+      - "${RABBITMQ_PORT:-5672}:5672"          # AMQP protocol
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"   # Management Dashboard UI
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
@@ -60,8 +40,8 @@ services:
     container_name: stream-minio
     command: server /data --console-address ":9001"
     ports:
-      - "${MINIO_PORT:-9000}:9000"
-      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+      - "${MINIO_PORT:-9000}:9000"              # S3 API
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"     # MinIO Console UI
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio_admin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio_secret}
@@ -80,7 +60,6 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
   redis_data:
   rabbitmq_data:
   minio_data:
