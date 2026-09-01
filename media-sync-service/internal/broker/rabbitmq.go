@@ -113,9 +113,55 @@ func (r *RabbitClient) declareTopology() error {
 		return err
 	}
 
-	return r.channel.QueueBind(
+	err = r.channel.QueueBind(
 		r.cfg.RabbitMQ.TranscodeQueue,
 		r.cfg.RabbitMQ.TranscodeReqKey,
+		r.cfg.RabbitMQ.Exchange,
+		false,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	// Portal Service: Transcode Completed Queue
+	_, err = r.channel.QueueDeclare(
+		"portal.transcode.results",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+	err = r.channel.QueueBind(
+		"portal.transcode.results",
+		r.cfg.RabbitMQ.TranscodeCmpKey,
+		r.cfg.RabbitMQ.Exchange,
+		false,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	// Billing Service: Usage Tick Queue
+	_, err = r.channel.QueueDeclare(
+		"billing.usage.ticks",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+	return r.channel.QueueBind(
+		"billing.usage.ticks",
+		r.cfg.RabbitMQ.UsageTickKey,
 		r.cfg.RabbitMQ.Exchange,
 		false,
 		nil,

@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"log"
 
-	amqp "github.com/rabbitmq/amqp091-go"
 	"stream-mesh/media-sync/internal/config"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type TranscodeHandler func(ctx context.Context, job TransCodeEvent) error

@@ -3,8 +3,8 @@ package broker
 import (
 	"context"
 	"fmt"
-	"time"
 	"stream-mesh/media-sync/internal/config"
+	"time"
 )
 
 type Publisher struct {
@@ -21,9 +21,8 @@ func NewPublisher(template *RabbitTemplate, cfg *config.Config) *Publisher {
 
 func (p *Publisher) PublishTranscodeCompleted(ctx context.Context, MediaId string, manifestURL string, targetBucket string) error {
 	payload := TransmuxEventResponse{
-		MediaId:     MediaId,
-		ManifestURL: manifestURL,
-
+		MediaId:      MediaId,
+		ManifestURL:  manifestURL,
 		TargetBucket: targetBucket,
 		CompletedAt:  time.Now().UTC(),
 	}
