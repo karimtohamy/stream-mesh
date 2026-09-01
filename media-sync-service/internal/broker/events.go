@@ -3,7 +3,7 @@ package broker
 import "time"
 
 type TransCodeEvent struct {
-	Eventid      string    `json:"event_id"`
+	EventId      string    `json:"event_id"`
 	MediaId      string    `json:"media_id"`
 	SourceFile   string    `json:"source_file"`
 	TargetBucket string    `json:"target_bucket"`
@@ -13,10 +13,10 @@ type TransCodeEvent struct {
 }
 
 type TransmuxEventResponse struct {
-	MediaId string `json:"media_id"`
-	ManifestURL string `json:"manifest_url"`
-	TargetBucket string `json:"target_bucket"`
-	CompletedAt time.Time `json:"completed_at"`
+	MediaId      string    `json:"media_id"`
+	ManifestURL  string    `json:"manifest_url"`
+	TargetBucket string    `json:"target_bucket"`
+	CompletedAt  time.Time `json:"completed_at"`
 }
 
 type UsageTickPayload struct {
