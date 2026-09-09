@@ -3,12 +3,13 @@ package storage
 import (
 	"context"
 	"fmt"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
+	"os"
 	"path/filepath"
 	"stream-mesh/media-sync/internal/config"
 	"strings"
-	"os"
+
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 type Storage interface {
@@ -22,10 +23,10 @@ type MinIOStorage struct {
 	client *minio.Client
 }
 
-func NewMinIOStorage(cfg *config.MinIOConfig) (*MinIOStorage, error) {
-	client, err := minio.New(cfg.Endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(cfg.AccessKey, cfg.SecretKey, ""),
-		Secure: cfg.UseSSL,
+func NewMinIOStorage(cfg *config.Config) (*MinIOStorage, error) {
+	client, err := minio.New(cfg.MinIO.Endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(cfg.MinIO.AccessKey, cfg.MinIO.SecretKey, ""),
+		Secure: cfg.MinIO.UseSSL,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to init client: %w", err)
