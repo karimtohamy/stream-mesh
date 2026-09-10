@@ -17,10 +17,21 @@ type Storage interface {
 	Download(ctx context.Context, bucketName, key, localPath string) error
 	UploadDirectory(ctx context.Context, bucketName, localPath, keyPrefix string) error
 	EnsureBucket(ctx context.Context, bucketName string) error
+	Upload(ctx context.Context, bucketName, key, localPath string) error
 }
 
 type MinIOStorage struct {
 	client *minio.Client
+}
+
+func (m *MinIOStorage) Upload(ctx context.Context, bucketName, key, localPath string) error {
+	if err := m.EnsureBucket(ctx, bucketName); err != nil {
+		return err
+	}
+	_, err := m.client.FPutObject(ctx, bucketName, key, localPath, minio.PutObjectOptions{
+		ContentType: "image/jpeg",
+	})
+	return err
 }
 
 func NewMinIOStorage(cfg *config.Config) (*MinIOStorage, error) {
