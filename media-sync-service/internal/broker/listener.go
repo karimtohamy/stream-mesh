@@ -7,8 +7,6 @@ import (
 	"log"
 
 	"stream-mesh/media-sync/internal/config"
-
-	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type TranscodeHandler func(ctx context.Context, job TransCodeEvent) error
@@ -32,12 +30,9 @@ func (l *Listener) StartTranscodeConsumer(ctx context.Context, handler Transcode
 		return fmt.Errorf("failed to set prefetch QoS: %w", err)
 	}
 
-	var msgs <-chan amqp.Delivery
-	var err error
-
-	msgs, err = ch.Consume(
+	msgs, err := ch.Consume(
 		l.cfg.RabbitMQ.TranscodeQueue,
-		"media-sync-transcoder",
+		"media-transcoder",
 		false,
 		false,
 		false,
@@ -66,7 +61,7 @@ func (l *Listener) StartTranscodeConsumer(ctx context.Context, handler Transcode
 				}
 
 				if err := handler(ctx, job); err != nil {
-					log.Printf("[TRANSCODE ERROR] Failed job for Media %s: %v", job.MediaId, err)
+					log.Printf("[TRANSCODE ERROR] Failed job for Media %s: %v", job.Slug, err)
 					_ = d.Nack(false, false)
 					continue
 				}

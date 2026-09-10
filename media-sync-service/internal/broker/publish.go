@@ -19,11 +19,12 @@ func NewPublisher(template *RabbitTemplate, cfg *config.Config) *Publisher {
 	}
 }
 
-func (p *Publisher) PublishTranscodeCompleted(ctx context.Context, MediaId string, manifestURL string, targetBucket string) error {
+func (p *Publisher) PublishTranscodeCompleted(ctx context.Context, manifestURL string,thumbnailURL string, job TransCodeEvent) error {
 	payload := TransmuxEventResponse{
-		MediaId:      MediaId,
 		ManifestURL:  manifestURL,
-		TargetBucket: targetBucket,
+		Name:         job.Name,
+		Slug:         job.Slug,
+		ThumbnailURL: thumbnailURL,
 		CompletedAt:  time.Now().UTC(),
 	}
 
@@ -33,19 +34,20 @@ func (p *Publisher) PublishTranscodeCompleted(ctx context.Context, MediaId strin
 
 	return nil
 }
-func (p *Publisher) PublishUsageTick(ctx context.Context, eventID, streamID, userID string, durationSec int, costPerMin float64) error {
-	payload := UsageTickPayload{
-		EventID:         eventID,
-		StreamID:        streamID,
-		UserID:          userID,
-		DurationSeconds: durationSec,
-		CostPerMinute:   costPerMin,
-		Timestamp:       time.Now().UTC(),
-	}
 
-	if err := p.template.ConvertAndSend(ctx, p.cfg.RabbitMQ.Exchange, p.cfg.RabbitMQ.UsageTickKey, payload); err != nil {
-		return fmt.Errorf("failed to publish usage tick event: %w", err)
-	}
-
-	return nil
-}
+//func (p *Publisher) PublishUsageTick(ctx context.Context, eventID, streamID, userID string, durationSec int, costPerMin float64) error {
+//	payload := UsageTickPayload{
+//		EventID:         eventID,
+//		StreamID:        streamID,
+//		UserID:          userID,
+//		DurationSeconds: durationSec,
+//		CostPerMinute:   costPerMin,
+//		Timestamp:       time.Now().UTC(),
+//	}
+//
+//	if err := p.template.ConvertAndSend(ctx, p.cfg.RabbitMQ.Exchange, p.cfg.RabbitMQ.UsageTickKey, payload); err != nil {
+//		return fmt.Errorf("failed to publish usage tick event: %w", err)
+//	}
+//
+//	return nil
+//}
