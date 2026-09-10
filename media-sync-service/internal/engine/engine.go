@@ -1,4 +1,4 @@
-package transmuxer
+package engine
 
 import (
 	"context"
@@ -8,13 +8,7 @@ import (
 	"path/filepath"
 )
 
-type Transmuxer struct{}
-
-func NewTransmuxer() *Transmuxer {
-	return &Transmuxer{}
-}
-
-func (t *Transmuxer) Transmux(ctx context.Context, inputPath, outputDir string) (string, error) {
+func Transmux(ctx context.Context, inputPath, outputDir string) (string, error) {
 	if err := os.MkdirAll(outputDir, os.FileMode(0755)); err != nil {
 		return "", fmt.Errorf("failed to create output directory: %w", err)
 	}
@@ -30,7 +24,7 @@ func (t *Transmuxer) Transmux(ctx context.Context, inputPath, outputDir string) 
 		"-hls_segment_filename", segmentPattern,
 		masterPlaylistPath,
 	)
-	out,err:= cmd.CombinedOutput()
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return "", fmt.Errorf("ffmpeg command failed: %v, output: %s", err, string(out))
 	}
