@@ -26,7 +26,23 @@ func Transmux(ctx context.Context, inputPath, outputDir string) (string, error) 
 	)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf("ffmpeg command failed: %v, output: %s", err, string(out))
+		return "", fmt.Errorf("FFmpeg command failed: %v, output: %s", err, string(out))
 	}
 	return masterPlaylistPath, nil
+}
+
+func GenerateThumbnail(ctx context.Context, inputPath, outputPath string) error {
+	cmd := exec.CommandContext(ctx, "ffmpeg",
+		"-y",
+		"-ss", "00:00:05",
+		"-i", inputPath,
+		"-vframes", "1",
+		"-q:v", "2",
+		outputPath,
+	)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("FFmpeg command failed: %v, output: %s", err, string(out))
+	}
+	return nil
 }
