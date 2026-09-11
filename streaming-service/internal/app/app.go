@@ -12,7 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -35,7 +35,7 @@ func NewApp() (*App, error) {
 	}
 	ctx := context.Background()
 	//db connection
-	db, err := gorm.Open(mysql.Open(cfg.MySQL.DSN()), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(cfg.Postgres.DSN()), &gorm.Config{})
 	if err != nil {
 		fmt.Print(err.Error())
 		return nil, err
@@ -48,7 +48,7 @@ func NewApp() (*App, error) {
 			return nil, err
 		}
 	}
-	log.Println("connected to MySQL and migrations ran ")
+	log.Println("connected to Postgres and migrations ran")
 
 	//rabbitMQ conn
 	log.Println("connected to RabbitMQ")

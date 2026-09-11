@@ -11,7 +11,7 @@ import (
 type Config struct {
 	App      AppConfig
 	RabbitMQ RabbitMqConfig
-	MySQL    MysqlConfig
+	Postgres PostgresConfig
 	Redis    RedisConfig
 }
 
@@ -31,7 +31,7 @@ type RabbitMqConfig struct {
 	UsageTickKey    string
 }
 
-type MysqlConfig struct {
+type PostgresConfig struct {
 	Host     string
 	Port     int
 	User     string
@@ -82,12 +82,12 @@ func Load() (*Config, error) {
 			TranscodeQueue:  getEnv("RABBIT_STREAMING_QUEUE", "streaming.transcode.results"),
 			UsageTickKey:    getEnv("RABBIT_USAGE_TICK_KEY", "stream.usage.tick"),
 		},
-		MySQL: MysqlConfig{
-			Host:     getEnv("MYSQL_HOST", "localhost"),
-			Port:     getEnvAsInt("MYSQL_PORT", 3306),
-			User:     getEnv("MYSQL_USER", "root"),
-			Password: getEnv("MYSQL_PASSWORD", ""),
-			Database: getEnv("MYSQL_DATABASE", "stream_db"),
+		Postgres: PostgresConfig{
+			Host:     getEnv("POSTGRES_HOST", "localhost"),
+			Port:     getEnvAsInt("POSTGRES_PORT", 5432),
+			User:     getEnv("POSTGRES_USER", "postgres"),
+			Password: getEnv("POSTGRES_PASSWORD", ""),
+			Database: getEnv("POSTGRES_DATABASE", "stream_db"),
 		},
 		Redis: RedisConfig{
 			Host: getEnv("REDIS_HOST", "localhost"),
@@ -101,10 +101,10 @@ func (r *RabbitMqConfig) URL() string {
 	return fmt.Sprintf("amqp://%s:%s@%s:%d/", r.User, r.Password, r.Host, r.Port)
 }
 
-func (m *MysqlConfig) DSN() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", m.User, m.Password, m.Host, m.Port, m.Database)
+func (p *PostgresConfig) DSN() string {
+	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
+		p.Host, p.User, p.Password, p.Database, p.Port)
 }
-
 func (r *RedisConfig) Addr() string {
 	return fmt.Sprintf("%s:%d", r.Host, r.Port)
 }
