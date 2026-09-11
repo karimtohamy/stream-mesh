@@ -16,7 +16,7 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Port int
+	Port        int
 	AutoMigrate bool
 }
 
@@ -42,6 +42,7 @@ type MysqlConfig struct {
 type RedisConfig struct {
 	Host string
 	Port int
+	DB   int
 }
 
 func getEnv(key, fallback string) string {
@@ -68,9 +69,8 @@ func Load() (*Config, error) {
 
 	return &Config{
 		App: AppConfig{
-			Port: getEnvAsInt("STREAMING_PORT", 8086),
+			Port:        getEnvAsInt("STREAMING_PORT", 8086),
 			AutoMigrate: getEnv("AUTO_MIGRATE", "false") == "true",
-
 		},
 		RabbitMQ: RabbitMqConfig{
 			Host:            getEnv("RABBITMQ_HOST", "localhost"),
@@ -92,6 +92,7 @@ func Load() (*Config, error) {
 		Redis: RedisConfig{
 			Host: getEnv("REDIS_HOST", "localhost"),
 			Port: getEnvAsInt("REDIS_PORT", 6379),
+			DB:   getEnvAsInt("REDIS_DB", 0),
 		},
 	}, nil
 }
