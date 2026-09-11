@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"stream-mesh/streaming/internal/payload"
 	"stream-mesh/streaming/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +23,8 @@ func (v *VideoController) GetVideoById(c *gin.Context) {
 	id := c.Param("id")
 	resp, err := v.service.GetVideoByID(c, id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		msg := fmt.Sprintf("Video for id %s not found", id)
+		payload.Fail(c, http.StatusNotFound, "NOT_FOUND", msg)
 		fmt.Print(err.Error())
 		return
 	}
@@ -32,7 +34,8 @@ func (v *VideoController) GetVideoBySlug(c *gin.Context) {
 	slug := c.Param("slug")
 	resp, err := v.service.GetBySlug(c, slug)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		msg := fmt.Sprintf("Video for slug %s not found", slug)
+		payload.Fail(c, http.StatusNotFound, "NOT_FOUND", msg)
 		fmt.Print(err.Error())
 		return
 	}
