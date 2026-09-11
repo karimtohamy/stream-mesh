@@ -14,6 +14,7 @@
 - [ ] JWT middleware for protected routes (streaming-service validates tokens issued by portal)
 - [ ] Cache user lookups in Redis to avoid hitting DB on every request
 - [ ] User model + event-driven sync from portal via RabbitMQ (`user.created`, `user.updated`)
+- [ ] Token revocation / logout blocklist in Redis — needed if access tokens are long-lived, since a stolen token stays valid until expiry. Consider switching to short-lived access tokens (15min–1hr) + long-lived refresh tokens stored in DB that can be revoked.
 
 ## Rooms (Redis-only, ephemeral)
 
