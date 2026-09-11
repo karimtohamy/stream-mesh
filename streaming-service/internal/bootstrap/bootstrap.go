@@ -13,7 +13,7 @@ import (
 
 func Init(ctx context.Context, app *app.App) {
 	controllers := &routes.Controllers{Video: initVideo(ctx, app)}
-	routes.Register(app.Router, controllers)
+	routes.Register(app.Cfg.App.Secret, app.Router, controllers)
 }
 
 func initVideo(ctx context.Context, app *app.App) *controller.VideoController {

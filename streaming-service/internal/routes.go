@@ -2,6 +2,7 @@ package router
 
 import (
 	"stream-mesh/streaming/internal/controller"
+	"stream-mesh/streaming/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,8 +12,9 @@ type Controllers struct {
 	Room  *controller.RoomController
 }
 
-func Register(engine *gin.Engine, c *Controllers) {
+func Register(secret string, engine *gin.Engine, c *Controllers) {
 	v1 := engine.Group("/api/v1")
+	v1.Use(middleware.Auth(secret))
 	registerVideoRoutes(v1, c.Video)
 	registerRoomRoutes(v1, c.Room)
 }

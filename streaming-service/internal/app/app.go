@@ -69,6 +69,7 @@ func NewApp() (*App, error) {
 	if err := redisClient.Ping(ctx).Err(); err != nil {
 		return nil, fmt.Errorf("failed to connect to redis: %w", err)
 	}
+	router := gin.Default()
 	log.Println("connected to Redis")
 	return &App{
 		Cfg:      cfg,
@@ -76,7 +77,7 @@ func NewApp() (*App, error) {
 		Listener: brokerListener,
 		Db:       db,
 		Redis:    redisClient,
-		Router:   gin.Default(),
+		Router:   router,
 	}, nil
 }
 

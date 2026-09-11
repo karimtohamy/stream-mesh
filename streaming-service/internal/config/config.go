@@ -18,6 +18,7 @@ type Config struct {
 type AppConfig struct {
 	Port        int
 	AutoMigrate bool
+	Secret      string
 }
 
 type RabbitMqConfig struct {
@@ -71,6 +72,7 @@ func Load() (*Config, error) {
 		App: AppConfig{
 			Port:        getEnvAsInt("STREAMING_PORT", 8086),
 			AutoMigrate: getEnv("AUTO_MIGRATE", "false") == "true",
+			Secret:      getEnv("JWT_SECRET", ""),
 		},
 		RabbitMQ: RabbitMqConfig{
 			Host:            getEnv("RABBITMQ_HOST", "localhost"),
