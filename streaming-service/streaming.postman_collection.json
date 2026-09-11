@@ -1,0 +1,86 @@
+{
+  "info": {
+    "name": "Streaming Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8086"
+    },
+    {
+      "key": "token",
+      "value": "PASTE_YOUR_JWT_HERE"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Videos",
+      "item": [
+        {
+          "name": "Get video by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/videos/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "videos", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get video by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/videos/slug/:slug",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "videos", "slug", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "regular-show-s07e04"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "Create room",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/room/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "room", "create"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
