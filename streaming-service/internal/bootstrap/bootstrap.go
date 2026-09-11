@@ -30,5 +30,5 @@ func initVideo(ctx context.Context, app *app.App) *controller.VideoController {
 }
 func initRoom(app *app.App) *controller.RoomController {
 	roomService := service.NewRoomService(app.Redis)
-	return controller.NewRoomController(roomService)
+	return controller.NewRoomController(roomService, app.Hub)
 }

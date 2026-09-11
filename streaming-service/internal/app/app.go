@@ -9,6 +9,7 @@ import (
 	"stream-mesh/streaming/internal/broker"
 	"stream-mesh/streaming/internal/config"
 	"stream-mesh/streaming/internal/models"
+	"stream-mesh/streaming/internal/ws"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -24,10 +25,14 @@ type App struct {
 	Server   *http.Server
 	Redis    *redis.Client
 	Router   *gin.Engine
+	Hub      *ws.Hub
 }
 
 func NewApp() (*App, error) {
 	//load config
+	hub := ws.NewHub()
+	go hub.Run()
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Print("failed to load config")
@@ -78,6 +83,7 @@ func NewApp() (*App, error) {
 		Db:       db,
 		Redis:    redisClient,
 		Router:   router,
+		Hub:      hub,
 	}, nil
 }
 
