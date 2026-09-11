@@ -21,12 +21,19 @@ func Auth(secret string) gin.HandlerFunc {
 		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
 			return []byte(secret), nil
 		}, jwt.WithValidMethods([]string{"HS256"}))
+
 		if err != nil || !token.Valid {
 			payload.Fail(c, http.StatusUnauthorized, "UNAUTHORIZED", "user unauthorized")
 			c.Abort()
 			return
 		}
-		c.Set("claims", token.Claims)
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok || !token.Valid {
+			payload.Fail(c, http.StatusUnauthorized, "UNAUTHORIZED", "user unauthorized")
+			c.Abort()
+			return
+		}
+		c.Set("user_id", claims["sub"])
 		c.Next()
 	}
 }
