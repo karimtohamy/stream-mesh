@@ -1,5 +1,9 @@
 # Streaming Service - TODO / Future Work
 
+## High Priority
+
+- [ ] **Redis connected log message missing** — `app.go` prints the Redis connection log before the client is actually pinged and confirmed. Move `log.Println("connected to Redis")` to after the `Ping` check.
+
 ## Edge Cases & Business Logic
 
 - [ ] **Video deleted from DB while cached in Redis**
@@ -20,8 +24,21 @@
 
 - [ ] Room model: `id`, `members`, `currentVideo`, `playbackState`, `updatedAt`
 - [ ] Room code: random 16-char string used as Redis key (`room:<code>`)
-- [ ] WebSocket hub for real-time playback sync within a room
+- [x] WebSocket hub for real-time playback sync within a room
 - [ ] WebRTC signaling for peer connections
+- [ ] Implement missing RoomService methods: `GetRoom`, `JoinRoom`, `LeaveRoom` — sync member list to Redis on every join/leave
+- [ ] Sync meaningful room state (current video, playback position) to Redis on `play`, `pause`, `seek` events — Redis is source of truth for room state, not every WS message
+- [ ] **Late join state sync**
+  - When a new user connects to a room, hub broadcasts a `state_request` event to the room with the new user's ID
+  - An existing active client (e.g. the host) receives it and responds with `{ event: "state_sync", data: { position, playing } }`
+  - Hub routes the `state_sync` response to only the joining user, not the whole room
+  - After receiving `state_sync` the new user is a normal room member and receives all subsequent broadcasts
+  - This ensures state comes from a live active player, not a potentially stale Redis snapshot
+  - Subtasks:
+    - [ ] On client register in hub, broadcast `state_request` to the room with the new joiner's userId
+    - [ ] Add `state_request` event handling on the frontend — host responds with current player position and playing state
+    - [ ] Add `state_sync` event handling in hub — route response to only the target userId, not the whole room
+    - [ ] After `state_sync` is sent, new client enters normal broadcast flow
 
 ## Models
 
