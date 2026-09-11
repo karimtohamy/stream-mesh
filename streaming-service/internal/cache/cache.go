@@ -1,9 +1,10 @@
-package cahce
+package cache
 
 import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -26,6 +27,7 @@ func Get[T any](ctx context.Context, rdn *redis.Client, key string) (*T, error) 
 
 func Set[T any](ctx context.Context, rdn *redis.Client, key string, value T, ttl time.Duration) error {
 	val, err := json.Marshal(value)
+	fmt.Sprintf("Cache Set")
 	if err != nil {
 		return err
 	}

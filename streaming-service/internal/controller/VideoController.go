@@ -20,7 +20,7 @@ func NewVideoController(svc *service.VideoService) *VideoController {
 
 func (v *VideoController) GetVideoById(c *gin.Context) {
 	id := c.Param("id")
-	resp, err := v.service.GetVideoByID(id)
+	resp, err := v.service.GetVideoByID(c, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		fmt.Print(err.Error())
@@ -30,7 +30,7 @@ func (v *VideoController) GetVideoById(c *gin.Context) {
 }
 func (v *VideoController) GetVideoBySlug(c *gin.Context) {
 	slug := c.Param("slug")
-	resp, err := v.service.GetBySlug(slug)
+	resp, err := v.service.GetBySlug(c, slug)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		fmt.Print(err.Error())
