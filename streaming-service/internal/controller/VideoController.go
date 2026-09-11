@@ -28,7 +28,7 @@ func (v *VideoController) GetVideoById(c *gin.Context) {
 		fmt.Print(err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	payload.OK(c, http.StatusOK, resp)
 }
 func (v *VideoController) GetVideoBySlug(c *gin.Context) {
 	slug := c.Param("slug")
@@ -39,5 +39,5 @@ func (v *VideoController) GetVideoBySlug(c *gin.Context) {
 		fmt.Print(err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	payload.OK(c, http.StatusOK, resp)
 }
