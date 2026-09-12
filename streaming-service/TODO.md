@@ -6,6 +6,8 @@
 
 ## Edge Cases & Business Logic
 
+- [ ] **Room TTL heartbeat** — rooms expire after 1 hour of no state updates. Frontend sends a `ping` event every 55 minutes per WS connection. Hub handles `ping` by calling `roomService.UpdatePlaybackState` to refresh the TTL without changing state and without broadcasting to the room.
+
 - [ ] **Video deleted from DB while cached in Redis**
   - If a video is removed from the `videos` table but still lives in Redis cache, `GetVideoBySlug` will return stale data until TTL expires.
   - Options to consider:
