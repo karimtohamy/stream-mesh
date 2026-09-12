@@ -27,4 +27,6 @@ func registerVideoRoutes(g *gin.RouterGroup, v *controller.VideoController) {
 func registerRoomRoutes(g *gin.RouterGroup, r *controller.RoomController) {
 	g.GET("/room/create", r.CreateRoom)
 	g.GET("/room/:code/ws", r.Connect)
+	g.POST("/room/:code/join", r.JoinRoom)
+	g.DELETE("/room/:code/leave", r.LeaveRoom)
 }

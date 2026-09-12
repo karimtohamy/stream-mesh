@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"stream-mesh/streaming/internal/payload"
 	"stream-mesh/streaming/internal/service"
@@ -49,4 +50,29 @@ func (r *RoomController) Connect(c *gin.Context) {
 
 	go client.ReadPump()
 	go client.WritePump()
+}
+
+func (r *RoomController) JoinRoom(c *gin.Context) {
+	userId := c.GetString("user_id")
+	roomCode := c.Param("code")
+	log.Print(userId, roomCode)
+	room, err := r.service.JoinRoom(c, roomCode, userId)
+	if err != nil {
+		payload.Fail(c, http.StatusNotFound, "NOT_FOUND", "room not found")
+		return
+	}
+	payload.OK(c, http.StatusOK, room)
+	return
+}
+
+func (r *RoomController) LeaveRoom(c *gin.Context) {
+	userId := c.GetString("user_id")
+	roomCode := c.Param("code")
+	if err := r.service.LeaveRoom(c, roomCode, userId); err != nil {
+		payload.Fail(c, http.StatusNotFound, "NOT_FOUND", "room not found")
+		return
+	}
+	payload.OK(c, http.StatusOK, "room left successfully")
+	return
+
 }
