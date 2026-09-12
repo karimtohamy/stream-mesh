@@ -9,8 +9,12 @@
       "value": "http://localhost:8086"
     },
     {
-      "key": "token",
-      "value": "PASTE_YOUR_JWT_HERE"
+      "key": "user_1_jwt",
+      "value": "PASTE_USER_1_JWT_HERE"
+    },
+    {
+      "key": "user_2_jwt",
+      "value": "PASTE_USER_2_JWT_HERE"
     },
     {
       "key": "room_code",
@@ -22,7 +26,7 @@
     "bearer": [
       {
         "key": "token",
-        "value": "{{token}}",
+        "value": "{{user_1_jwt}}",
         "type": "string"
       }
     ]
