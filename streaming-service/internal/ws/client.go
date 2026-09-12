@@ -55,6 +55,7 @@ func (c *Client) WritePump() {
 		}
 	}()
 	for data := range c.send {
+
 		if err := c.conn.WriteMessage(websocket.TextMessage, data); err != nil {
 			break
 		}

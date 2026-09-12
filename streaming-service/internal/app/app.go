@@ -9,7 +9,6 @@ import (
 	"stream-mesh/streaming/internal/broker"
 	"stream-mesh/streaming/internal/config"
 	"stream-mesh/streaming/internal/models"
-	"stream-mesh/streaming/internal/ws"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -25,13 +24,10 @@ type App struct {
 	Server   *http.Server
 	Redis    *redis.Client
 	Router   *gin.Engine
-	Hub      *ws.Hub
 }
 
 func NewApp() (*App, error) {
 	//load config
-	hub := ws.NewHub()
-	go hub.Run()
 
 	cfg, err := config.Load()
 	if err != nil {
@@ -54,7 +50,15 @@ func NewApp() (*App, error) {
 		}
 	}
 	log.Println("connected to Postgres and migrations ran")
-
+	//redis conn
+	redisClient := redis.NewClient(&redis.Options{
+		Addr: cfg.Redis.Addr(),
+		DB:   cfg.Redis.DB,
+	})
+	if err := redisClient.Ping(ctx).Err(); err != nil {
+		return nil, fmt.Errorf("failed to connect to redis: %w", err)
+	}
+	log.Println("connected to Redis")
 	//rabbitMQ conn
 	log.Println("connected to RabbitMQ")
 	rabbitClient, err := broker.NewRabbitClient(cfg)
@@ -66,16 +70,9 @@ func NewApp() (*App, error) {
 	//register listener
 	brokerListener := broker.NewListener(rabbitClient, cfg)
 	//redis connection
-	redisClient := redis.NewClient(&redis.Options{
-		Addr: cfg.Redis.Addr(),
-		DB:   cfg.Redis.DB,
-	})
-	fmt.Print(redisClient)
-	if err := redisClient.Ping(ctx).Err(); err != nil {
-		return nil, fmt.Errorf("failed to connect to redis: %w", err)
-	}
+
+	//register default gin router
 	router := gin.Default()
-	log.Println("connected to Redis")
 	return &App{
 		Cfg:      cfg,
 		RabbitMQ: rabbitClient,
@@ -83,7 +80,6 @@ func NewApp() (*App, error) {
 		Db:       db,
 		Redis:    redisClient,
 		Router:   router,
-		Hub:      hub,
 	}, nil
 }
 

@@ -1,24 +1,30 @@
 package ws
 
-import "encoding/json"
+import (
+	"context"
+	"encoding/json"
+	"stream-mesh/streaming/internal/service"
+)
 
 type Hub struct {
 	rooms      map[string]map[*Client]bool // roomCode -> set of connected clients
 	register   chan *Client
 	unregister chan *Client
 	broadcast  chan *Message
+	service    *service.RoomService
 }
 
-func NewHub() *Hub {
+func NewHub(roomService *service.RoomService) *Hub {
 	return &Hub{
 		rooms:      make(map[string]map[*Client]bool),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		broadcast:  make(chan *Message),
+		service:    roomService,
 	}
 }
 
-func (h *Hub) Run() {
+func (h *Hub) Run(ctx context.Context) {
 	for {
 		select {
 		case client := <-h.register:
@@ -52,6 +58,11 @@ func (h *Hub) Run() {
 					delete(h.rooms[msg.RoomCode], client)
 				}
 			}
+
+			if msg.Event == "play" || msg.Event == "pause" || msg.Event == "seek" || msg.Event == "ping" {
+				h.service.UpdatePlaybackState(ctx, msg.Event, msg.RoomCode, msg.Data)
+			}
+
 		}
 	}
 }
@@ -66,4 +77,3 @@ func (h *Hub) Unregister(client *Client) {
 func (h *Hub) Broadcast(msg *Message) {
 	h.broadcast <- msg
 }
-
